@@ -49,7 +49,7 @@ async function curate() {
                 if (!artistInfo) { return false; }
                 return artistInfo.genres.some(genre => jpopGenres.includes(genre.toLowerCase()));
             });
-        }).filter(song => !jPopPlaylist.find(alreadyInPlaylistSong => alreadyInPlaylistSong.track.id === song.track.id));
+        }).filter(song => !jPopPlaylist.find(alreadyInPlaylistSong => alreadyInPlaylistSong.track.id === song.track.id || alreadyInPlaylistSong.track.name === song.track.name));
         if (moveIntoJpopSongs.length) {
             await spotifyApi.addTracksToPlaylist(jpopID, moveIntoJpopSongs.map(song => song.track.uri));
             console.log(`Moved ${moveIntoJpopSongs.length} songs into Jpop playlist.`);
