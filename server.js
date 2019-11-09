@@ -11,7 +11,7 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const spotifyApi = new SpotifyWebApi({
     clientId: 'c7ae7aee8f434b83b625b086aedc6add',
     clientSecret: 'f8f86d09fe834b748a759e6e593c10c8',
-    redirectUri: 'https://14b46242.ngrok.io/callback'
+    redirectUri: 'https://spotify-auto.weeb.tools/callback'
 });
 
 app.get('/callback', async (req, res) => {
