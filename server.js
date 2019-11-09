@@ -5,6 +5,8 @@ const { jpopID } = require('./config.js');
 
 const jpopGenres = ['otacore', 'anime', 'anime rock', 'anime score', 'j-pop', 'j-rock', 'visual kei', 'japanese alternative rock', 'japanese indie rock', 'anime latino'];
 
+let curatingTimeout;
+
 const SpotifyWebApi = require('spotify-web-api-node');
 const spotifyApi = new SpotifyWebApi({
     clientId: 'c7ae7aee8f434b83b625b086aedc6add',
@@ -18,10 +20,21 @@ app.get('/callback', async (req, res) => {
         const data = await spotifyApi.authorizationCodeGrant(req.query.code);
         spotifyApi.setAccessToken(data.body['access_token']);
         spotifyApi.setRefreshToken(data.body['refresh_token']);
-        const savedTracks = await spotifyApi.getMySavedTracks({
-            limit: 50,
-            offset: 1
-        });
+        clearTimeout(curatingTimeout);
+        curate();
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+app.listen(process.env.PORT, () => {
+    console.log('Server running on port:', process.env.PORT);
+    console.log(spotifyApi.createAuthorizeURL(['user-library-read', 'playlist-modify-private', 'playlist-modify-public']));
+});
+
+async function curate() {
+    try {
+        const savedTracks = await spotifyApi.getMySavedTracks({ limit: 50 });
         const songs = savedTracks.body.items;
         const allArtists = [...new Set(songs.map(song => song.track.artists.map(artist => artist.id)).flat())];
         const [info, jPopPlaylist] = await Promise.all([
@@ -35,20 +48,18 @@ app.get('/callback', async (req, res) => {
                 if (!artistInfo) { return false; }
                 return artistInfo.genres.some(genre => jpopGenres.includes(genre.toLowerCase()));
             });
-        }).filter(song => {
-            return !jPopPlaylist.find(alreadyInPlaylistSong => alreadyInPlaylistSong.track.id === song.track.id)
-        });
-        const moveIntoPlaylist = await spotifyApi.addTracksToPlaylist(jpopID, moveIntoJpopSongs.map(song => song.track.uri));
-        console.log(moveIntoPlaylist);
+        }).filter(song => !jPopPlaylist.find(alreadyInPlaylistSong => alreadyInPlaylistSong.track.id === song.track.id));
+        if (moveIntoJpopSongs.length) {
+            await spotifyApi.addTracksToPlaylist(jpopID, moveIntoJpopSongs.map(song => song.track.uri));
+            console.log(`Moved ${moveIntoJpopSongs.length} songs into Jpop playlist.`);
+        } else {
+            console.log('No songs to move into Jpop playlist');
+        }
     } catch (err) {
-        console.error(err);
+        console.error('Error curating...', err);
     }
-});
-
-app.listen(process.env.PORT, () => {
-    console.log('Server running on port:', process.env.PORT);
-    console.log(spotifyApi.createAuthorizeURL(['user-library-read', 'playlist-modify-private']));
-});
+    curatingTimeout = setTimeout(curate, 1000 * 60 * 15);
+}
 
 async function getAllSongsInPlaylist(playlistID) {
     const info = await spotifyApi.getPlaylist(playlistID);
