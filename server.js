@@ -34,6 +34,7 @@ app.listen(process.env.PORT, () => {
 
 async function curate() {
     try {
+        await refreshToken();
         const savedTracks = await spotifyApi.getMySavedTracks({ limit: 50 });
         const songs = savedTracks.body.items;
         const allArtists = [...new Set(songs.map(song => song.track.artists.map(artist => artist.id)).flat())];
@@ -64,4 +65,9 @@ async function curate() {
 async function getAllSongsInPlaylist(playlistID) {
     const info = await spotifyApi.getPlaylist(playlistID);
     return info.body.tracks.items;
+}
+
+async function refreshToken() {
+    const data = await spotifyApi.refreshAccessToken();
+    spotifyApi.setAccessToken(data.body['access_token']);
 }
