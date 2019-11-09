@@ -1,0 +1,16 @@
+{
+  "name": "spotify-auto",
+  "version": "1.0.0",
+  "description": "Automatically add spotify songs to album",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "spotify-web-api-node": "^4.0.0"
+  }
+}
