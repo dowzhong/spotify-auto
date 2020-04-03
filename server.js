@@ -72,7 +72,7 @@ async function getAllSongsInPlaylist(playlistID) {
             const info = await spotifyApi.getPlaylistTracks(playlistID, {
                 offset: 100 * i
             });
-            songs.push(...info.body.tracks.items);
+            songs.push(...info.body.items);
         }
     }
     return songs;
