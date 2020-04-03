@@ -69,6 +69,7 @@ async function getAllSongsInPlaylist(playlistID) {
     const amountOfSongs = info.body.total;
     if (amountOfSongs > 100) {
         for (let i = 1; i < Math.ceil(amountOfSongs / 100); i++) {
+            await sleep();
             const info = await spotifyApi.getPlaylistTracks(playlistID, {
                 offset: 100 * i
             });
@@ -81,4 +82,8 @@ async function getAllSongsInPlaylist(playlistID) {
 async function refreshToken() {
     const data = await spotifyApi.refreshAccessToken();
     spotifyApi.setAccessToken(data.body['access_token']);
+}
+
+function sleep(time = 1000) {
+    return new Promise(resolve => setTimeout(resolve, time))
 }
