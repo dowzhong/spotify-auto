@@ -63,8 +63,19 @@ async function curate() {
 }
 
 async function getAllSongsInPlaylist(playlistID) {
+    const songs = [];
     const info = await spotifyApi.getPlaylist(playlistID);
-    return info.body.tracks.items;
+    songs.push(...info.body.tracks.items);
+    const amountOfSongs = info.body.tracks.total;
+    if (amountOfSongs > 100) {
+        for (let i = 1; i < Math.ceil(amountOfSongs / 100); i++) {
+            const info = await spotifyApi.getPlaylist(playlistID, {
+                offset: 100 * i + 1
+            });
+            songs.push(...info.body.tracks.items);
+        }
+    }
+    return songs;
 }
 
 async function refreshToken() {
