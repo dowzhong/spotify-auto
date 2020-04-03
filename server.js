@@ -68,6 +68,7 @@ async function getAllSongsInPlaylist(playlistID) {
     songs.push(...info.body.tracks.items);
     const amountOfSongs = info.body.tracks.total;
     if (amountOfSongs > 100) {
+        console.logs('pagninte');
         for (let i = 1; i < Math.ceil(amountOfSongs / 100); i++) {
             const info = await spotifyApi.getPlaylist(playlistID, {
                 offset: 100 * i + 1
@@ -75,6 +76,7 @@ async function getAllSongsInPlaylist(playlistID) {
             songs.push(...info.body.tracks.items);
         }
     }
+    console.log(songs);
     return songs;
 }
 
