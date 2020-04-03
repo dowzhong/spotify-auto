@@ -64,19 +64,17 @@ async function curate() {
 
 async function getAllSongsInPlaylist(playlistID) {
     const songs = [];
-    const info = await spotifyApi.getPlaylist(playlistID);
-    songs.push(...info.body.tracks.items);
-    const amountOfSongs = info.body.tracks.total;
+    const info = await spotifyApi.getPlaylistTracks(playlistID);
+    songs.push(...info.body.items);
+    const amountOfSongs = info.body.total;
     if (amountOfSongs > 100) {
-        console.logs('pagninte');
         for (let i = 1; i < Math.ceil(amountOfSongs / 100); i++) {
-            const info = await spotifyApi.getPlaylist(playlistID, {
-                offset: 100 * i + 1
+            const info = await spotifyApi.getPlaylistTracks(playlistID, {
+                offset: 100 * i
             });
             songs.push(...info.body.tracks.items);
         }
     }
-    console.log(songs);
     return songs;
 }
 
