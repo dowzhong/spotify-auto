@@ -3,7 +3,17 @@ const app = express();
 
 const { jpopID } = require('./config.js');
 
-const jpopGenres = ['otacore', 'anime', 'anime rock', 'anime score', 'j-pop', 'j-rock', 'visual kei', 'japanese alternative rock', 'japanese indie rock', 'anime latino'];
+const jpopGenres = [
+    'otacore',
+    'anime',
+    'anime rock',
+    'anime score',
+    'j-pop', 'j-rock',
+    'visual kei',
+    'japanese alternative rock',
+    'japanese indie rock',
+    'anime latino'
+];
 
 let curatingTimeout;
 
